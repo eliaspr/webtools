@@ -1,0 +1,23 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload:
+    name: 'Upload'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+      - name: 'Upload to Strato'
+        uses: milanmk/actions-file-deployer@master
+        with:
+          remote-protocol: 'sftp'
+          remote-host: '${{ secrets.DEPLOY_SFTP_HOST }}'
+          remote-port: 22
+          remote-user: '${{ secrets.DEPLOY_SFTP_USER }}'
+          remote-password: '${{ secrets.DEPLOY_SFTP_PASSWORD }}'
+          local-path: './www'
+          remote-path: '${{ secrets.DEPLOY_SFTP_PATH }}'
+          sync: 'full'
