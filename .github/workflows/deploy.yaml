@@ -6,6 +6,9 @@ on:
 jobs:
   upload:
     name: 'Upload'
+    concurrency:
+      group: 'upload-to-sftp'
+      cancel-in-progress: false
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
