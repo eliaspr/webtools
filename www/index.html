@@ -36,7 +36,40 @@
             font-weight: bold;
             text-decoration: underline;
         }
+
+        .flex-basis-50 {
+            flex-basis: 50%;
+        }
+
+        .monospace-box {
+            background: white;
+            font-size: 0.8em;
+            border: 1px solid gray;
+            padding: 0.5em;
+            white-space: preserve;
+            font-family: "Cascadia Code", "Consolas", monospace;
+        }
     </style>
+    <script>
+        function utils_decode_base64(input) {
+            try {
+                return atob(input);
+            } catch {
+                return undefined;
+            }
+        }
+
+        const utils_encode_base64 = btoa;
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
 </head>
 <body>
 <div class="container mt-4 p-5 shadow d-flex flex-column gap-6">
@@ -54,6 +87,40 @@
             <a class="btn btn-outline-primary" target="_blank" href="https://realfavicongenerator.net/"><i class="bi bi-star"></i> Favicon</a>
             <a class="btn btn-outline-primary" target="_blank" href="https://regex101.com/"><i class="bi bi-regex"></i> Regex101</a>
         </div>
+    </div>
+    <div>
+        <h4 class="mb-3">JWT Extraktor</h4>
+        <div class="mb-3 d-flex flex-row gap-2">
+            <input aria-label="Eingabe des JWT" class="form-control" placeholder="JWT hier eingeben" id="jwt-extractor-input">
+            <button type="button" class="btn btn-outline-primary" onclick="jwt_extractor_run()">Auslesen</button>
+        </div>
+        <div style="display: none;" id="jwt-extractor-output" class="flex-row">
+            <div class="flex-basis-50 monospace-box" id="jwt-extractor-output-left"></div>
+            <div class="flex-basis-50 monospace-box" id="jwt-extractor-output-right"></div>
+        </div>
+        <script>
+            function jwt_extractor_run() {
+                const content = document.getElementById('jwt-extractor-input').value.trim();
+                if (content.length === 0) {
+                    alert("Bitte gebe einen JWT ein :)")
+                    return;
+                }
+                const regex = new RegExp('([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)');
+                const result = regex.exec(content);
+                if (!result) {
+                    alert("Bitte gebe einen gültigen JWT ein :)");
+                    return;
+                }
+                document.getElementById('jwt-extractor-output').style.display = 'flex';
+                function process(index) {
+                    let data = utils_decode_base64(result[index]);
+                    data = data === undefined ? '<invalid JWT>' : JSON.stringify(JSON.parse(data), null, 2);
+                    return escapeHtml(data);
+                }
+                document.getElementById('jwt-extractor-output-left').innerHTML = process(1);
+                document.getElementById('jwt-extractor-output-right').innerHTML = process(2);
+            }
+        </script>
     </div>
 </div>
 </body>
