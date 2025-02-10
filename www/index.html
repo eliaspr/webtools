@@ -37,6 +37,10 @@
             text-decoration: underline;
         }
 
+        .btn-outline-primary {
+            background: #fafafa;
+        }
+
         .flex-basis-50 {
             flex-basis: 50%;
         }
@@ -48,6 +52,23 @@
             padding: 0.5em;
             white-space: preserve;
             font-family: "Cascadia Code", "Consolas", monospace;
+            word-break: break-all;
+        }
+
+        @keyframes notification-box-show {
+            0% {top: -40px;}
+            15% {top: 50px;}
+            85% {top: 50px;}
+            100% {top: -40px;}
+        }
+
+        .notification-box {
+            top: -40px;
+            animation-duration: 3s;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 10px;
+            color: white;
         }
     </style>
     <script>
@@ -61,7 +82,7 @@
 
         const utils_encode_base64 = btoa;
 
-        function escapeHtml(unsafe) {
+        function utils_escape_html(unsafe) {
             return unsafe
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
@@ -69,10 +90,33 @@
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
         }
+
+        function utils_show_notification(text, color) {
+            const el = document.getElementById('notification-box');
+            if (color === 'green') {
+                el.style.background = 'rgba(0, 150, 0, 0.7)';
+            } else if (color === 'red') {
+                el.style.background = 'rgba(200, 0, 0, 0.7)';
+            } else {
+                alert(`Ungültige Farbe: ${color}`);
+            }
+            el.style.animationName = undefined;
+            el.innerHTML = utils_escape_html(text);
+            setTimeout(() => el.style.animationName = 'notification-box-show', 10);
+        }
+
+        function utils_copy_to_clipboard(htmlId) {
+            const element = document.getElementById(htmlId);
+            if (element) {
+                navigator.clipboard.writeText(element.innerText);
+                utils_show_notification('In die Zwischenablage kopiert!', 'green');
+            }
+        }
     </script>
 </head>
 <body>
-<div class="container mt-4 p-5 shadow d-flex flex-column gap-6">
+<div class="position-absolute start-50 p-2 notification-box shadow" id="notification-box"></div>
+<div class="container my-4 p-5 shadow d-flex flex-column gap-6">
     <div class="d-flex flex-row align-items-center gap-3">
         <img src="favicon-96x96.png" alt="Logo of webtools" style="width: 5em;" class="border" />
         <div class="d-flex flex-column">
@@ -91,7 +135,7 @@
     <div>
         <h4 class="mb-3">JWT Extraktor</h4>
         <div class="mb-3 d-flex flex-row gap-2">
-            <input aria-label="Eingabe des JWT" class="form-control" placeholder="JWT hier eingeben" id="jwt-extractor-input">
+            <input aria-label="Eingabe des JWT" class="form-control" placeholder="JWT hier eingeben" id="jwt-extractor-input" />
             <button type="button" class="btn btn-outline-primary" onclick="jwt_extractor_run()">Auslesen</button>
         </div>
         <div style="display: none;" id="jwt-extractor-output" class="flex-row">
@@ -102,23 +146,81 @@
             function jwt_extractor_run() {
                 const content = document.getElementById('jwt-extractor-input').value.trim();
                 if (content.length === 0) {
-                    alert("Bitte gebe einen JWT ein :)")
+                    utils_show_notification("Bitte gebe einen JWT ein", 'red');
+                    document.getElementById('jwt-extractor-output').style.display = 'none';
                     return;
                 }
                 const regex = new RegExp('([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)');
                 const result = regex.exec(content);
                 if (!result) {
-                    alert("Bitte gebe einen gültigen JWT ein :)");
+                    utils_show_notification("Bitte gebe einen gültigen JWT ein", 'red');
+                    document.getElementById('jwt-extractor-output').style.display = 'none';
                     return;
                 }
                 document.getElementById('jwt-extractor-output').style.display = 'flex';
+                let hasInvalid = false;
                 function process(index) {
                     let data = utils_decode_base64(result[index]);
-                    data = data === undefined ? '<invalid JWT>' : JSON.stringify(JSON.parse(data), null, 2);
-                    return escapeHtml(data);
+                    if (data === undefined) {
+                        hasInvalid = true;
+                        return '';
+                    } else {
+                        return utils_escape_html(JSON.stringify(JSON.parse(data), null, 2));
+                    }
                 }
                 document.getElementById('jwt-extractor-output-left').innerHTML = process(1);
                 document.getElementById('jwt-extractor-output-right').innerHTML = process(2);
+                if (hasInvalid) {
+                    document.getElementById('jwt-extractor-output').style.display = 'none';
+                    utils_show_notification("Bitte gebe einen gültigen JWT ein", 'red');
+                }
+            }
+        </script>
+    </div>
+    <div>
+        <h4 class="mb-3">Base64 Encoder</h4>
+        <div class="mb-3 d-flex flex-row align-items-start gap-2">
+            <textarea aria-label="Eingabe des Wertes" class="form-control" placeholder="string hier eingeben" id="base64-encoder-input"></textarea>
+            <button type="button" class="btn btn-outline-primary" onclick="base64_encoder_run()">Kodieren</button>
+        </div>
+        <div style="display: none;" id="base64-encoder-output" class="flex-row align-items-start gap-2">
+            <div id="base64-encoder-output-data" class="monospace-box flex-grow-1"></div>
+            <button type="button" class="btn btn-sm btn-light" title="In die Zwischenablage kopieren" onclick="utils_copy_to_clipboard('base64-encoder-output-data')"><i class="bi bi-copy"></i></button>
+        </div>
+        <script>
+            function base64_encoder_run() {
+                const content = document.getElementById('base64-encoder-input').value;
+                if (content.length === 0) {
+                    utils_show_notification('Der Eingabe-string ist leer', 'red');
+                    document.getElementById('base64-encoder-output').style.display = 'none';
+                    return;
+                }
+                document.getElementById('base64-encoder-output').style.display = 'flex';
+                document.getElementById('base64-encoder-output-data').innerHTML = utils_encode_base64(content);
+            }
+        </script>
+    </div>
+    <div>
+        <h4 class="mb-3">Base64 Decoder</h4>
+        <div class="mb-3 d-flex flex-row gap-2">
+            <input aria-label="Eingabe des Base64-kodierten Wertes" class="form-control" placeholder="base64 hier eingeben" id="base64-decoder-input" />
+            <button type="button" class="btn btn-outline-primary" onclick="base64_decoder_run()">Dekodieren</button>
+        </div>
+        <div style="display: none;" id="base64-decoder-output" class="flex-row align-items-start gap-2">
+            <div id="base64-decoder-output-data" class="monospace-box flex-grow-1"></div>
+            <button type="button" class="btn btn-sm btn-light" title="In die Zwischenablage kopieren" onclick="utils_copy_to_clipboard('base64-decoder-output-data')"><i class="bi bi-copy"></i></button>
+        </div>
+        <script>
+            function base64_decoder_run() {
+                const base64 = document.getElementById('base64-decoder-input').value;
+                const result = utils_decode_base64(base64);
+                if(base64.length === 0 || result === undefined) {
+                    utils_show_notification('Ungültiges base64', 'red');
+                    document.getElementById('base64-decoder-output').style.display = 'none';
+                    return;
+                }
+                document.getElementById('base64-decoder-output').style.display = 'flex';
+                document.getElementById('base64-decoder-output-data').innerHTML = result;
             }
         </script>
     </div>
