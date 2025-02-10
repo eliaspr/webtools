@@ -10,7 +10,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
-      - name: 'Upload to Strato'
+      - name: 'Upload to SFTP server'
         uses: milanmk/actions-file-deployer@master
         with:
           remote-protocol: 'sftp'
