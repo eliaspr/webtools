@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - eliaspr-patch-1
+      - main
 
 jobs:
   upload:
