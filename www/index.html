@@ -47,12 +47,15 @@
 
         .monospace-box {
             background: white;
-            font-size: 0.8em;
             border: 1px solid gray;
             padding: 0.5em;
             white-space: preserve;
-            font-family: "Cascadia Code", "Consolas", monospace;
             word-break: break-all;
+        }
+
+        .monospace-box, textarea {
+            font-size: 0.8em !important;
+            font-family: "Cascadia Code", "Consolas", monospace;
         }
 
         @keyframes notification-box-show {
@@ -117,11 +120,14 @@
 <body>
 <div class="position-absolute start-50 p-2 notification-box shadow" id="notification-box"></div>
 <div class="container my-4 p-5 shadow d-flex flex-column gap-6">
-    <div class="d-flex flex-row align-items-center gap-3">
+    <div class="d-flex flex-row align-items-stretch gap-3">
         <img src="favicon-96x96.png" alt="Logo of webtools" style="width: 5em;" class="border" />
         <div class="d-flex flex-column">
             <h1 class="m-0">webtools</h1>
             <a class="small text-dark" href="https://github.com/eliaspr/webtools">https://github.com/eliaspr/webtools</a>
+        </div>
+        <div class="flex-grow-1 position-relative">
+            <img src="pexels-ms-kng-1100378854-20717971.jpg" alt="Image of a dog in front of a computer" style="width: 15em;" class="position-absolute top-0 end-0" />
         </div>
     </div>
     <div>
@@ -180,7 +186,7 @@
     <div>
         <h4 class="mb-3">Base64 Encoder</h4>
         <div class="mb-3 d-flex flex-row align-items-start gap-2">
-            <textarea aria-label="Eingabe des Wertes" class="form-control" placeholder="string hier eingeben" id="base64-encoder-input"></textarea>
+            <textarea aria-label="Eingabe des Wertes" class="form-control" placeholder="string hier eingeben" id="base64-encoder-input" rows="8"></textarea>
             <button type="button" class="btn btn-outline-primary" onclick="base64_encoder_run()">Kodieren</button>
         </div>
         <div style="display: none;" id="base64-encoder-output" class="flex-row align-items-start gap-2">

@@ -24,3 +24,24 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+
+
+
+
+=============================================================================
+  Background Image "pexels-phil-s-964389-2416419.jpg"
+=============================================================================
+
+Photo by Phil S: https://www.pexels.com/photo/photo-of-green-trees-2416419/
+
+
+
+
+
+=============================================================================
+  Image "pexels-ms-kng-1100378854-20717971.jpg"
+=============================================================================
+
+Photo by Ms Kng: https://www.pexels.com/photo/dog-sitting-in-front-of-a-laptop-20717971/
+
