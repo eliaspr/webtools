@@ -140,11 +140,11 @@
     </div>
     <div>
         <h4 class="mb-3">JWT Extraktor</h4>
-        <div class="mb-3 d-flex flex-row gap-2">
+        <div class="d-flex flex-row gap-2">
             <input aria-label="Eingabe des JWT" class="form-control" placeholder="JWT hier eingeben" id="jwt-extractor-input" />
             <button type="button" class="btn btn-outline-primary" onclick="jwt_extractor_run()">Auslesen</button>
         </div>
-        <div style="display: none;" id="jwt-extractor-output" class="flex-row">
+        <div style="display: none;" id="jwt-extractor-output" class="mt-3 flex-row">
             <div class="flex-basis-50 monospace-box" id="jwt-extractor-output-left"></div>
             <div class="flex-basis-50 monospace-box" id="jwt-extractor-output-right"></div>
         </div>
@@ -156,7 +156,7 @@
                     document.getElementById('jwt-extractor-output').style.display = 'none';
                     return;
                 }
-                const regex = new RegExp('([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)');
+                const regex = new RegExp('^([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)$');
                 const result = regex.exec(content);
                 if (!result) {
                     utils_show_notification("Bitte gebe einen gültigen JWT ein", 'red');
@@ -171,7 +171,12 @@
                         hasInvalid = true;
                         return '';
                     } else {
-                        return utils_escape_html(JSON.stringify(JSON.parse(data), null, 2));
+                        try {
+                            return utils_escape_html(JSON.stringify(JSON.parse(data), null, 2));
+                        } catch {
+                            hasInvalid = true;
+                            return '';
+                        }
                     }
                 }
                 document.getElementById('jwt-extractor-output-left').innerHTML = process(1);
@@ -185,11 +190,11 @@
     </div>
     <div>
         <h4 class="mb-3">Base64 Encoder</h4>
-        <div class="mb-3 d-flex flex-row align-items-start gap-2">
+        <div class="d-flex flex-row align-items-start gap-2">
             <textarea aria-label="Eingabe des Wertes" class="form-control" placeholder="string hier eingeben" id="base64-encoder-input" rows="8"></textarea>
             <button type="button" class="btn btn-outline-primary" onclick="base64_encoder_run()">Kodieren</button>
         </div>
-        <div style="display: none;" id="base64-encoder-output" class="flex-row align-items-start gap-2">
+        <div style="display: none;" id="base64-encoder-output" class="mt-3 flex-row align-items-start gap-2">
             <div id="base64-encoder-output-data" class="monospace-box flex-grow-1"></div>
             <button type="button" class="btn btn-sm btn-light" title="In die Zwischenablage kopieren" onclick="utils_copy_to_clipboard('base64-encoder-output-data')"><i class="bi bi-copy"></i></button>
         </div>
@@ -208,11 +213,11 @@
     </div>
     <div>
         <h4 class="mb-3">Base64 Decoder</h4>
-        <div class="mb-3 d-flex flex-row gap-2">
+        <div class="d-flex flex-row gap-2">
             <input aria-label="Eingabe des Base64-kodierten Wertes" class="form-control" placeholder="base64 hier eingeben" id="base64-decoder-input" />
             <button type="button" class="btn btn-outline-primary" onclick="base64_decoder_run()">Dekodieren</button>
         </div>
-        <div style="display: none;" id="base64-decoder-output" class="flex-row align-items-start gap-2">
+        <div style="display: none;" id="base64-decoder-output" class="mt-3 flex-row align-items-start gap-2">
             <div id="base64-decoder-output-data" class="monospace-box flex-grow-1"></div>
             <button type="button" class="btn btn-sm btn-light" title="In die Zwischenablage kopieren" onclick="utils_copy_to_clipboard('base64-decoder-output-data')"><i class="bi bi-copy"></i></button>
         </div>
