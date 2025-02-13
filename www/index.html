@@ -76,6 +76,8 @@
     </style>
     <script>
         function utils_decode_base64(input) {
+            input = input.replace(/-/g, '+');
+            input = input.replace(/_/g, '/');
             try {
                 return atob(input);
             } catch {
@@ -83,7 +85,15 @@
             }
         }
 
-        const utils_encode_base64 = btoa;
+        function utils_encode_base64(input, url_encode = false) {
+            result = btoa(input);
+            if (url_encode) {
+                result = result.replace(/\+/g, '-');
+                result = result.replace(/\//g, '_');
+                result = result.replace(/=+$/, '');
+            }
+            return result;
+        }
 
         function utils_escape_html(unsafe) {
             return unsafe
@@ -192,7 +202,13 @@
         <h4 class="mb-3">Base64 Encoder</h4>
         <div class="d-flex flex-row align-items-start gap-2">
             <textarea aria-label="Eingabe des Wertes" class="form-control" placeholder="string hier eingeben" id="base64-encoder-input" rows="8"></textarea>
-            <button type="button" class="btn btn-outline-primary" onclick="base64_encoder_run()">Kodieren</button>
+            <div class="d-flex flex-column gap-2">
+                <button type="button" class="btn btn-outline-primary" onclick="base64_encoder_run()">Kodieren</button>
+                <div class="form-check">
+                    <input type="checkbox" id="base64-encoder-url-mode" class="form-check-input" />
+                    <label for="base64-encoder-url-mode" class="form-check-label">URL</label>
+                </div>
+            </div>
         </div>
         <div style="display: none;" id="base64-encoder-output" class="mt-3 flex-row align-items-start gap-2">
             <div id="base64-encoder-output-data" class="monospace-box flex-grow-1"></div>
@@ -206,8 +222,9 @@
                     document.getElementById('base64-encoder-output').style.display = 'none';
                     return;
                 }
+                const urlEncode = document.getElementById('base64-encoder-url-mode').checked;
                 document.getElementById('base64-encoder-output').style.display = 'flex';
-                document.getElementById('base64-encoder-output-data').innerHTML = utils_encode_base64(content);
+                document.getElementById('base64-encoder-output-data').innerHTML = utils_encode_base64(content, urlEncode);
             }
         </script>
     </div>
