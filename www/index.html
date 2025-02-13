@@ -118,7 +118,7 @@
     </script>
 </head>
 <body>
-<div class="position-absolute start-50 p-2 notification-box shadow" id="notification-box"></div>
+<div class="position-fixed start-50 p-2 notification-box shadow" id="notification-box"></div>
 <div class="container my-4 p-5 shadow d-flex flex-column gap-6">
     <div class="d-flex flex-row align-items-stretch gap-3">
         <img src="favicon-96x96.png" alt="Logo of webtools" style="width: 5em;" class="border" />
@@ -243,6 +243,32 @@
             <input type="color" />
             <input type="color" />
         </div>
+    </div>
+    <div>
+        <h4 class="mb-3">JSON Formatter</h4>
+        <div class="d-flex flex-row align-items-start gap-2">
+            <textarea aria-label="Eingabe des JSON-Strings" class="form-control" placeholder="JSON hier eingeben" id="json-formatter-input" rows="8"></textarea>
+            <button type="button" class="btn btn-outline-primary" onclick="json_formatter_run()">Formatieren</button>
+        </div>
+        <div style="display: none;" id="json-formatter-output" class="mt-3 flex-row align-items-start gap-2">
+            <div id="json-formatter-output-data" class="monospace-box flex-grow-1"></div>
+            <button type="button" class="btn btn-sm btn-light" title="In die Zwischenablage kopieren" onclick="utils_copy_to_clipboard('json-formatter-output-data')"><i class="bi bi-copy"></i></button>
+        </div>
+        <script>
+            function json_formatter_run() {
+                const json = document.getElementById('json-formatter-input').value;
+                let formatted;
+                try {
+                    formatted = utils_escape_html(JSON.stringify(JSON.parse(json), null, 2));
+                } catch {
+                    utils_show_notification("Bitte gebe gültiges JSON ein", 'red');
+                    document.getElementById('json-formatter-output').style.display = 'none';
+                    return;
+                }
+                document.getElementById('json-formatter-output').style.display = 'flex';
+                document.getElementById('json-formatter-output-data').innerHTML = formatted;
+            }
+        </script>
     </div>
 </div>
 </body>
