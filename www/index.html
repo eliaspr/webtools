@@ -160,13 +160,16 @@
         </div>
         <script>
             function jwt_extractor_run() {
-                const content = document.getElementById('jwt-extractor-input').value.trim();
+                let content = document.getElementById('jwt-extractor-input').value.trim();
                 if (content.length === 0) {
                     utils_show_notification("Bitte gebe einen JWT ein", 'red');
                     document.getElementById('jwt-extractor-output').style.display = 'none';
                     return;
                 }
-                const regex = new RegExp('^([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)\.([a-zA-Z0-9+/]+)$');
+                content = content.replace(/\n/, '');
+                content = content.replace(/ /, '');
+                content = content.replace(/\t/, '');
+                const regex = new RegExp('^([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)\.([a-zA-Z0-9_-]+)$');
                 const result = regex.exec(content);
                 if (!result) {
                     utils_show_notification("Bitte gebe einen gültigen JWT ein", 'red');
@@ -193,7 +196,7 @@
                 document.getElementById('jwt-extractor-output-right').innerHTML = process(2);
                 if (hasInvalid) {
                     document.getElementById('jwt-extractor-output').style.display = 'none';
-                    utils_show_notification("Bitte gebe einen gültigen JWT ein", 'red');
+                    utils_show_notification("Header/Payload konnte nicht dekodiert werden", 'red');
                 }
             }
         </script>
